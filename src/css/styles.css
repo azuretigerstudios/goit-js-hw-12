@@ -1,18 +1,123 @@
-/**
-  |============================
-  | include css partials with
-  | default @import url()
-  |============================
-*/
-/* Common styles */
-@import url('./reset.css');
-@import url('./base.css');
-@import url('./container.css');
-@import url('./animations.css');
+/* --- ÖNCEKİ KODLARIN AYNEN KALSIN --- */
+/* (Buraya önceki ödevdeki body, gallery, input stillerini yapıştır) */
+body {
+  background-color: var(--bg-color);
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  margin: 0;
+  padding: 20px;
+}
 
-/* Sections style */
-@import url('./header.css');
-@import url('./vite-promo.css');
-@import url('./badges.css');
-@import url('./back-link.css');
-@import url('./footer.css');
+button {
+  background: transparent;
+  color: var(--neon-blue);
+  border: 2px solid var(--neon-blue);
+  padding: 10px 25px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: var(--neon-blue);
+  color: var(--bg-color);
+  box-shadow: 0 0 15px var(--neon-blue);
+}
+
+input[name="query"] {
+  background: transparent;
+  border: 2px solid var(--neon-blue);
+  color: #fff;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-radius: 5px;
+  outline: none;
+  box-shadow: 0 0 5px rgba(3, 233, 244, 0.3);
+}
+
+/* --- GALERİ GRID --- */
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  list-style: none;
+  padding: 0;
+  justify-content: center;
+}
+
+.gallery-item {
+  width: calc((100% - 48px) / 3); /* 3'lü kolon */
+  border: 1px solid var(--neon-blue);
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--card-bg);
+  box-shadow: 0 0 10px rgba(3, 233, 244, 0.1);
+  transition: transform 0.3s;
+}
+
+.gallery-item:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(3, 233, 244, 0.3);
+}
+
+.gallery-link {
+  display: block;
+  text-decoration: none;
+}
+
+.gallery-image {
+  display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+:root {
+  --neon-blue: #03e9f4;
+  --bg-color: #050505;
+  --card-bg: rgba(255, 255, 255, 0.05);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+    padding-bottom: 50px; /* Alttan boşluk */
+}
+
+/* ... Diğer stiller ... */
+
+/* --- LOAD MORE BUTONU (YENİ) --- */
+.load-more {
+  display: block;
+  margin: 30px auto; /* Ortala */
+  background: transparent;
+  color: var(--neon-blue);
+  border: 2px solid var(--neon-blue);
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s;
+  box-shadow: 0 0 10px rgba(3, 233, 244, 0.2);
+}
+
+.load-more:hover {
+  background: var(--neon-blue);
+  color: var(--bg-color);
+  box-shadow: 0 0 20px var(--neon-blue);
+}
+
+/* Gizleme Sınıfı */
+.is-hidden {
+  display: none !important;
+}
+
+/* Loader Ortalaması */
+.loader {
+    margin: 20px auto;
+    /* Loader stilin önceki ödevdeki gibi kalabilir */
+}
