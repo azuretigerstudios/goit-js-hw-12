@@ -1,15 +1,22 @@
 import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 
-// API ve Render importları
 import { fetchImages } from "./js/pixabay-api";
-// renderImages fonksiyonunu import ediyoruz, createMarkup'ı kaldırdık çünkü renderImages içinde kullanılıyor
-import { renderImages, clearGallery } from "./js/render-functions";
+
+// Tüm UI fonksiyonlarını import ediyoruz
+import {
+  renderGallery,
+  clearGallery,
+  showLoader,
+  hideLoader,
+  showLoadMore,
+  hideLoadMore
+} from "./js/render-functions";
 
 // DOM Elementleri
 const form = document.querySelector(".form");
 const gallery = document.querySelector(".gallery");
-const loader = document.querySelector(".loader"); // span.loader
+const loader = document.querySelector(".loader");
 const loadMoreBtn = document.querySelector(".load-more");
 
 // Değişkenler
@@ -18,8 +25,8 @@ let page = 1;
 let maxPage = 0;
 const perPage = 15;
 
-// Başlangıçta Load More butonu gizli
-loadMoreBtn.classList.add("is-hidden");
+// Başlangıç Durumu
+hideLoadMore(loadMoreBtn);
 
 // --- FORM SUBMIT ---
 form.addEventListener("submit", async (event) => {
@@ -39,11 +46,10 @@ form.addEventListener("submit", async (event) => {
   query = searchQuery;
   page = 1;
 
-  // Galeriyi temizle ve butonu gizle
+  // UI Temizliği
   clearGallery(gallery);
-  loadMoreBtn.classList.add("is-hidden");
-
-  showLoader();
+  hideLoadMore(loadMoreBtn);
+  showLoader(loader);
 
   try {
     const data = await fetchImages(query, page);
@@ -56,16 +62,14 @@ form.addEventListener("submit", async (event) => {
         backgroundColor: '#ef4040',
         messageColor: '#fff',
       });
-      hideLoader();
+      hideLoader(loader);
       return;
     }
 
     maxPage = Math.ceil(data.totalHits / perPage);
 
-    // --- DÜZELTME BURADA ---
-    // Artık HTML oluşturma, ekleme ve Lightbox yenileme işlemini tek satırda yapıyoruz.
-    // 3. parametre (isAppend) vermiyoruz, varsayılan false (yani temizleyip yazar).
-    renderImages(data.hits, gallery);
+    // Render Fonksiyonunu Çağırıyoruz (isAppend = false)
+    renderGallery(data.hits, gallery, false);
 
     iziToast.success({
       title: 'Success',
@@ -74,7 +78,7 @@ form.addEventListener("submit", async (event) => {
     });
 
     if (maxPage > 1) {
-      loadMoreBtn.classList.remove("is-hidden");
+      showLoadMore(loadMoreBtn);
     }
 
   } catch (error) {
@@ -84,35 +88,34 @@ form.addEventListener("submit", async (event) => {
       message: 'Something went wrong. Please try again later.',
     });
   } finally {
-    hideLoader();
+    hideLoader(loader);
   }
 });
 
 // --- LOAD MORE CLICK ---
 loadMoreBtn.addEventListener("click", async () => {
   page += 1;
-  showLoader();
-  loadMoreBtn.classList.add("is-hidden");
+
+  hideLoadMore(loadMoreBtn); // Yüklenirken gizle
+  showLoader(loader);
 
   try {
     const data = await fetchImages(query, page);
 
-    // --- DÜZELTME BURADA ---
-    // 3. parametreyi TRUE gönderiyoruz. Bu "ekleme yap" (append) demektir.
-    // Lightbox.refresh() komutu renderImages içinde otomatik çalışır.
-    renderImages(data.hits, gallery, true);
+    // Render Fonksiyonunu Çağırıyoruz (isAppend = true)
+    renderGallery(data.hits, gallery, true);
 
     scrollPage();
 
     if (page >= maxPage) {
-      loadMoreBtn.classList.add("is-hidden");
+      hideLoadMore(loadMoreBtn);
       iziToast.info({
         title: 'Info',
         message: "We're sorry, but you've reached the end of search results.",
         position: 'topRight',
       });
     } else {
-      loadMoreBtn.classList.remove("is-hidden");
+      showLoadMore(loadMoreBtn);
     }
 
   } catch (error) {
@@ -121,23 +124,12 @@ loadMoreBtn.addEventListener("click", async () => {
         message: 'Error fetching more images.',
     });
   } finally {
-    hideLoader();
+    hideLoader(loader);
   }
 });
 
-// --- YARDIMCI FONKSİYONLAR ---
-
-function showLoader() {
-  // span elementi olduğu için display: block yapılmalı (CSS'te none idi)
-  loader.style.display = "block";
-}
-
-function hideLoader() {
-  loader.style.display = "none";
-}
-
+// Smooth Scroll (Bu main.js içinde kalabilir veya render'a taşınabilir ama genelde main'de durması sorun olmaz)
 function scrollPage() {
-  // İlk kartın yüksekliğini al
   const firstCard = gallery.querySelector(".gallery-item");
   if (firstCard) {
     const { height: cardHeight } = firstCard.getBoundingClientRect();
